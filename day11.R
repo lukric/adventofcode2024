@@ -31,7 +31,7 @@ apply_rules <- function(x) {
   x * 2024
 }
 
-vec2 <- vec1
+vec2 <- stones1
 for (i in 1:25) {
 vec2 <- lapply(vec2, apply_rules) |> 
   unlist()
