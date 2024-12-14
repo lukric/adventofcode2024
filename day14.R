@@ -5,7 +5,7 @@
 # Day 14
 library(stringr)
 library(dplyr)
-library(tidyr)
+library(plot.matrix)
 
 # read data
 con <- file("inputs/day14-1.txt")
@@ -15,10 +15,7 @@ close.connection(con)
 xmax <- 101
 ymax <- 103
 
-
-
 # part 1
-
 v1 <- stringr::str_replace(robots, " v=", ",") |>
   stringr::str_replace("p=", "") |> 
   stringr::str_split(",")
@@ -54,23 +51,38 @@ prod(df2$n)
 
 # part 2
 
-plot_robots <- function(df1, n_sec = 1) {
+plot_robots <- function(n_sec = 1, df1, xmax, ymax) {
   
   df2 <- df1 |> 
     dplyr::mutate(x_end = (x + n_sec * vx) %% xmax,
                   y_end = (y + n_sec * vy) %% ymax)
   
-  m <- matrix(".", nrow = ymax, ncol = xmax)
+  m <- matrix(0, nrow = ymax, ncol = xmax)
   for (i in 1:nrow(df2)) {
     xcoord <-  df2 |> 
       dplyr::filter(dplyr::row_number() == i) |> dplyr::pull(x_end) + 1
     ycoord <-  df2 |> 
       dplyr::filter(dplyr::row_number() == i) |> dplyr::pull(y_end) + 1
     
-    m[ycoord, xcoord] <- "X"
+    m[ycoord, xcoord] <- 1
   }
   m
 }
 
-# missing definition of christmas tree
+library(parallel)
+num_cores <- parallel::detectCores()
+cl <- parallel::makeCluster(20)
+parallel::clusterExport(cl, varlist = c("df1", "xmax", "ymax"))
 
+raw_m <- parallel::parLapply(cl, 1:10000, plot_robots, df1 = df1, xmax = xmax, ymax = ymax)
+
+
+for (i in seq_along(raw_m)) {
+  n_sec <- i
+  png(paste0("C:/Users/micro/OneDrive/Desktop/aoc2024_outputs/robots_", n_sec, ".png"))
+  plot(raw_m[[i]], key = NULL, col = c("black", "white"))
+  dev.off()
+}
+
+# answer 2
+# 7916
