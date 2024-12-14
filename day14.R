@@ -79,7 +79,7 @@ raw_m <- parallel::parLapply(cl, 1:10000, plot_robots, df1 = df1, xmax = xmax, y
 
 for (i in seq_along(raw_m)) {
   n_sec <- i
-  png(paste0("C:/Users/micro/OneDrive/Desktop/aoc2024_outputs/robots_", n_sec, ".png"))
+  png(paste0("aoc2024_outputs/robots_", n_sec, ".png"))
   plot(raw_m[[i]], key = NULL, col = c("black", "white"))
   dev.off()
 }
